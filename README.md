@@ -44,31 +44,30 @@ README.md
 
 ## Setup
 1. Clone the repository:
-```
+```bash
 git clone <repository-url>
 cd <repository-directory>
 ```
 2. Restore the dependencies:
-```
+```bash
 dotnet restore
 ```
 3. Build the projet :
-```
+```bash
 dotnet build
 ```
 4. Ensure MongoDB is running locally.
 5. Place the [netflix_titles.csv](./assets/datasets/netflix_titles.csv) file in the [datasets](./assets/datasets/) directory.
 
-
 ## Running the Project
 To run the project and import the data into MongoDB, execute the following command:
-```
+```bash
 dotnet run
 ```
 
 ## Code Explanation
-- [Program.cs]("./Program.cs"): Contains the main logic to read the CSV file and import the data into MongoDB.
-- [NetflixTitle.cs]("./NetflixTitle.cs"): Defines the NetflixTitle class with properties corresponding to the CSV columns.
+- [Program.cs](./Program.cs): Contains the main logic to read the CSV file and import the data into MongoDB.
+- [NetflixTitle.cs](./NetflixTitle.cs): Defines the NetflixTitle class with properties corresponding to the CSV columns.
 
 ## Notes
 - All fields in the CSV are nullable except for show_id.
