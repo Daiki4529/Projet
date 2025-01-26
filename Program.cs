@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿// Program.cs
+using MongoDB.Driver;
 using MongoDB.Bson;
 using CsvHelper.Configuration;
 using System.Globalization;
@@ -28,9 +29,10 @@ class Program
             
             foreach (var record in records)
             {
-                if (record.date_added.HasValue && DateTime.TryParseExact(record.date_added.Value.ToString(), "MMMM dd, yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
+                // Utilisation de la propriété camel case "DateAdded"
+                if (record.DateAdded.HasValue && DateTime.TryParseExact(record.DateAdded.Value.ToString(), "MMMM dd, yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
                 {
-                    record.date_added = date;
+                    record.DateAdded = date;
                 }
             }
 
