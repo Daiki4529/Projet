@@ -1,9 +1,16 @@
 using CsvHelper.Configuration.Attributes;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace Projet
 {
     public class NetflixTitle
     {
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        [Ignore]
+        public string? Id { get; set; }
+
         [Name("show_id")]
         public string? ShowId { get; set; }
 
@@ -17,7 +24,8 @@ namespace Projet
         public string? Director { get; set; }
 
         [Name("cast")]
-        public string? Cast { get; set; }
+        [TypeConverter(typeof(StringToListConverter))]
+        public List<string>? Cast { get; set; }
 
         [Name("country")]
         public string? Country { get; set; }
@@ -35,7 +43,8 @@ namespace Projet
         public string? Duration { get; set; }
 
         [Name("listed_in")]
-        public string? ListedIn { get; set; }
+        [TypeConverter(typeof(StringToListConverter))]
+        public List<string>? ListedIn { get; set; }
 
         [Name("description")]
         public string? Description { get; set; }

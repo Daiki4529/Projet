@@ -14,32 +14,54 @@ namespace Projet
             var database = client.GetDatabase("NetflixData");
             var collection = database.GetCollection<NetflixTitle>("titles");
 
-            string filePath = "./assets/datasets/netflix_titles.csv";
-
-            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-            {
-                HasHeaderRecord = true,
-                Delimiter = ",",
-                IgnoreBlankLines = true
-            };
-
-            using (var reader = new StreamReader(filePath))
-            using (var csv = new CsvReader(reader, config))
-            {
-                var records = csv.GetRecords<NetflixTitle>().ToList();
-
-                foreach (var record in records)
-                {
-                    if (record.DateAdded.HasValue && DateTime.TryParseExact(record.DateAdded.Value.ToString(), "MMMM dd, yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
-                    {
-                        record.DateAdded = date;
-                    }
-                }
-
-                collection.InsertMany(records);
+            if (args.Length > 0 && args[0] == "import")
+            {   
+                Utils.ImportData(collection);
+                Utils.CreerCollectionGenres(database, collection);
+                return;
             }
 
-            Console.WriteLine("Data has been imported successfully!");
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("=== Menu Netflix ===");
+                Console.WriteLine("1. Afficher tous les titres");
+                Console.WriteLine("2. Rechercher un titre par acteur");
+                Console.WriteLine("3. Trier par genre");
+                Console.WriteLine("4. Trier par année de sortie");
+                Console.WriteLine("5. Quitter");
+                Console.WriteLine("Veuillez choisir une option :");
+
+                var cki = Console.ReadKey();
+                Console.Clear();
+
+                if (cki.Key == ConsoleKey.D1)
+                {
+                    Utils.AfficherTousLesTitres(collection);
+                }
+                else if (cki.Key == ConsoleKey.D2)
+                {
+                    Utils.RechercherParActeur(collection);
+                }
+                else if (cki.Key == ConsoleKey.D3)
+                {
+                    Utils.TrierParGenre(database, collection);
+                }
+                else if (cki.Key == ConsoleKey.D4)
+                {
+                    Utils.TrierParAnnee(collection);
+                }
+                else if (cki.Key == ConsoleKey.D5)
+                {
+                    Console.WriteLine("Au revoir !");
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("Option invalide. Appuyez sur une touche pour revenir au menu.");
+                    Console.ReadKey();
+                }
+            }
         }
     }
 }
