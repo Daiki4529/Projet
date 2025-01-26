@@ -1,44 +1,45 @@
-﻿// Program.cs
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 using MongoDB.Bson;
 using CsvHelper.Configuration;
 using System.Globalization;
 using CsvHelper;
 
-class Program
+namespace Projet
 {
-    static void Main(string[] args)
+    class Program
     {
-        var client = new MongoClient("mongodb://localhost:27017");
-        var database = client.GetDatabase("NetflixData");
-        var collection = database.GetCollection<NetflixTitle>("titles");
-
-        string filePath = "./assets/datasets/netflix_titles.csv";
-
-        var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+        static void Main(string[] args)
         {
-            HasHeaderRecord = true,
-            Delimiter = ",",
-            IgnoreBlankLines = true
-        };
+            var client = new MongoClient("mongodb://localhost:27017");
+            var database = client.GetDatabase("NetflixData");
+            var collection = database.GetCollection<NetflixTitle>("titles");
 
-        using (var reader = new StreamReader(filePath))
-        using (var csv = new CsvReader(reader, config))
-        {
-            var records = csv.GetRecords<NetflixTitle>().ToList();
-            
-            foreach (var record in records)
+            string filePath = "./assets/datasets/netflix_titles.csv";
+
+            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
-                // Utilisation de la propriété camel case "DateAdded"
-                if (record.DateAdded.HasValue && DateTime.TryParseExact(record.DateAdded.Value.ToString(), "MMMM dd, yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
+                HasHeaderRecord = true,
+                Delimiter = ",",
+                IgnoreBlankLines = true
+            };
+
+            using (var reader = new StreamReader(filePath))
+            using (var csv = new CsvReader(reader, config))
+            {
+                var records = csv.GetRecords<NetflixTitle>().ToList();
+
+                foreach (var record in records)
                 {
-                    record.DateAdded = date;
+                    if (record.DateAdded.HasValue && DateTime.TryParseExact(record.DateAdded.Value.ToString(), "MMMM dd, yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
+                    {
+                        record.DateAdded = date;
+                    }
                 }
+
+                collection.InsertMany(records);
             }
 
-            collection.InsertMany(records);
+            Console.WriteLine("Data has been imported successfully!");
         }
-
-        Console.WriteLine("Data has been imported successfully!");
     }
 }
